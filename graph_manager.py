@@ -1,5 +1,6 @@
 import networkx as nx
 import json
+import math
 
 
 class GraphManager:
@@ -23,15 +24,17 @@ class GraphManager:
 				# checking if the two nodes are close enough
 				if(float(nodes[i][1]['x'])-d <= float(nodes[j][1]['x']) <= float(nodes[i][1]['x']+d) and
 							float(nodes[i][1]['y'])-d <= float(nodes[j][1]['y']) <= float(nodes[i][1]['y']+d)):
+					# TODO non sono sicuro se la distanza bisognava calcolarla facendo la distanza euclidea tra i punti
+					#  (x,y) di ogni provincia
 
-					# TODO, è richieso di mettere un peso sugli archi, in particolare è scritto: "Modify P and R to
-					#  weight their edges.". Non capisco se consiglia prima di fare senza peso, e nella versione
-					#  definitiva aggiungerlo invece, oppure se il peso sugli archi è una cosa che dovresti essere in
-					#  grado di disabilitare, o comunque avere una versione con peso e una senza. Per ora ho messo un
-					#  peso/distanza a zero, da segnaposto
+					#  Euclidean distance
+					distance_long = (float(nodes[i][1]['x']-float(nodes[j][1]['x']))) ** 2
+					distance_alt = (float(nodes[i][1]['y']-float(nodes[j][1]['y']))) ** 2
+					distance = math.sqrt(distance_long + distance_alt)
 
-					# TODO calcola distanza da mettere in weight
-					self.graph.add_edge(nodes[i][0], nodes[j][0], weight=0)
+					# TODO l'attributo 'weight=' è stato sostituito con 'label=' perchè così veniva visualizzato sul
+					#  grafo (nell'immagine province.png'
+					self.graph.add_edge(nodes[i][0], nodes[j][0], label=self.truncate(distance, 2))
 
 	def plot_graph(self, graph_name):
 		# TODO, una prima veloce implementazione per visualizzare il grafo. E' molto confusionaria, eventualmente da
@@ -42,28 +45,33 @@ class GraphManager:
 		# plotting the graph
 		A = nx.nx_agraph.to_agraph(self.graph)
 		A.layout('dot', args='-Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
-		A.draw(graph_name+'.png')
+		A.draw('./imgs/'+graph_name+'.png')
+
+
+	def truncate(self, f, n):
+		'''Truncates/pads a float f to n decimal places without rounding'''
+		s = '%.12f' % f
+		i, p, d = s.partition('.')
+		return '.'.join([i, (d + '0' * n)[:n]])
 
 
 def main():
 	# Parsing the JSON, the result is a Python dictionary
-	with open('../COVID-19/dati-json/dpc-covid19-ita-province.json') as f:
+	with open("./dati-json/dpc-covid19-ita-province.json") as f:
 		parsed_file = json.load(f)
 
 	# Building the graph of provinces
+	provinces_already_annotated = []
 	P = GraphManager()
 	for province_data in parsed_file:
-		# TODO da gestire alcune province nel JSON che si chiamano "In fase di definizione/aggiornamento", la mia idea
-		#  sarebbe quella di non considerarle
 		# extracting information from the JSON
-		province = province_data['denominazione_provincia']
-		position_x = province_data['long']
-		position_y = province_data['lat']
-		# TODO nel JSON sono segnati per giornate diverse tutte le province italiane con relativo totale casi di COVID.
-		#  Allora scorrendo nel file passiamo più volte da una stessa provincia anche se in giorni diversi. Sto
-		#  sicuramente sprecando tempo con i duplicati. C'è modo di farlo più efficientemente?
-		# adding each province to the graph
-		P.add_node_to_graph(province, position_x, position_y)
+		if province_data['sigla_provincia'] != '' and province_data['sigla_provincia'] not in provinces_already_annotated:
+			provinces_already_annotated.append(province_data['sigla_provincia'])
+			province = province_data['denominazione_provincia']
+			position_x = province_data['long']
+			position_y = province_data['lat']
+			# adding each province to the graph
+			P.add_node_to_graph(province, position_x, position_y)
 
 	# Inserting the edges according to the distance between each node
 	P.add_edges()
