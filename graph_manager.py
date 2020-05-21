@@ -1,6 +1,7 @@
 import networkx as nx
 import json
 import math
+import random
 
 
 class GraphManager:
@@ -77,9 +78,14 @@ def main():
 	P.add_edges()
 	P.plot_graph('province')
 
-	# TODO:
 	# Building the graph of doubles
-
+	R = GraphManager()
+	# Generate 2000 pairs of double (x,y)
+	for i in range(2000):
+		x = random.randrange(30, 50)
+		y = random.randrange(10, 20)
+		R.add_node_to_graph(i, x, y)
+	R.add_edges()
 
 if __name__ == '__main__':
 	main()
