@@ -35,7 +35,7 @@ class GraphManager:
 
 					# TODO l'attributo 'weight=' è stato sostituito con 'label=' perchè così veniva visualizzato sul
 					#  grafo (nell'immagine province.png'
-					self.graph.add_edge(nodes[i][0], nodes[j][0], label=self.truncate(distance, 2))
+					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 2)))
 
 	def plot_graph(self, graph_name):
 		# TODO, una prima veloce implementazione per visualizzare il grafo. E' molto confusionaria, eventualmente da
@@ -48,12 +48,38 @@ class GraphManager:
 		A.layout('dot', args='-Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
 		A.draw('./imgs/'+graph_name+'.png')
 
-
 	def truncate(self, f, n):
 		'''Truncates/pads a float f to n decimal places without rounding'''
 		s = '%.12f' % f
 		i, p, d = s.partition('.')
 		return '.'.join([i, (d + '0' * n)[:n]])
+
+	def betweenness_centrality(self):
+		print("True values: ", nx.betweenness_centrality(self.graph))
+		nodes = list(self.graph.nodes(data=True))
+		shortest_paths = []
+		for i in range(len(nodes)):
+			for j in range(i + 1, len(nodes)):
+				try:
+					shortest_paths.append(nx.bellman_ford_path(self.graph, nodes[i][0], nodes[j][0], weight="label"))
+				except:
+					pass
+		BC = {}
+		for target_node in range(len(nodes)):
+			num = 0
+			den = 0
+			for path in shortest_paths:
+				if path[0] != nodes[target_node][0] and path[-1] != nodes[target_node][0]:
+					if nodes[target_node][0] in path:
+						num += 1
+					den += 1
+			BC[nodes[target_node][0]] = num/den
+		return BC
+
+
+
+
+
 
 
 def main():
@@ -86,6 +112,9 @@ def main():
 		y = random.randrange(10, 20)
 		R.add_node_to_graph(i, x, y)
 	R.add_edges()
+
+
+	print("..my values: ", P.betweenness_centrality())
 
 if __name__ == '__main__':
 	main()
