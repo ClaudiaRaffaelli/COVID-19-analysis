@@ -32,10 +32,7 @@ class GraphManager:
 					distance_lat = (float(nodes[i][1]['y'])-float(nodes[j][1]['y'])) ** 2
 					distance = math.sqrt(distance_long + distance_lat)
 
-					# TODO l'attributo 'weight=' è stato sostituito con 'label=' perchè così veniva visualizzato sul
-					#  grafo (nell'immagine province.png'
-					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 2)))
-
+					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 6)))
 
 	def plot_graph(self, graph_name):
 		print("Nodes in the graph:")
@@ -53,15 +50,20 @@ class GraphManager:
 		return '.'.join([i, (d + '0' * n)[:n]])
 
 	def betweenness_centrality(self):
-		print("True values: ", nx.betweenness_centrality(self.graph))
+		# TODO Migliorare eventualmente i valori ottenuti con nx.betweenness_centrality() rispetto a quelli calcolati
+		#  con questa funzione
+		print("True values: ", nx.betweenness_centrality(self.graph, normalized=True, endpoints=False))
 		nodes = list(self.graph.nodes(data=True))
-		shortest_paths = []
+		shortest_paths = []    # Store all the shortest path between each pair of nodes in the graph
 		for i in range(len(nodes)):
 			for j in range(i + 1, len(nodes)):
-				try:
-					shortest_paths.append(nx.bellman_ford_path(self.graph, nodes[i][0], nodes[j][0], weight="label"))
+				try: # there may not be a path between two nodes
+					shortest_paths.append(self.bellman_ford_shortest_path(nodes[i][0], nodes[j][0]))
 				except:
 					pass
+
+		# Store the Betweenness Centrality for each node. For now, we suppose there is only 1 shortest path
+		# between 2 nodes
 		BC = {}
 		for target_node in range(len(nodes)):
 			num = 0
@@ -74,12 +76,8 @@ class GraphManager:
 			BC[nodes[target_node][0]] = num/den
 		return BC
 
-
-	def bellman_ford(self):
+	def bellman_ford(self, source_vertex):
 		vertices = list(self.graph.nodes())
-
-		# setting a random vertex as source vertex
-		source_vertex = random.choice(vertices)
 
 		# Initialization of the graph
 		distances = dict.fromkeys(self.graph.nodes(), math.inf)
@@ -95,6 +93,7 @@ class GraphManager:
 		#  Purtroppo a fare prove manuali si fa poco bene.
 		count = len(vertices)-1
 		while count > 0:
+			something_has_changed = False
 			for (u, v) in self.graph.edges():
 				# TODO, parere anche qui. Gli archi nel grafo sono indiretti e se esiste (Chieti, L'aquila) non esiste
 				#  (L'aquila, Chieti). Affinché tutto funzionasse ho dovuto considerare anche la coppia amica mancante
@@ -103,9 +102,15 @@ class GraphManager:
 				if distances[u] + float(self.graph[u][v]['label']) < distances[v]:
 					distances[v] = distances[u] + float(self.graph[u][v]['label'])
 					predecessors[v] = u
+					something_has_changed = True
 				elif distances[v] + float(self.graph[v][u]['label']) < distances[u]:
 					distances[u] = distances[v] + float(self.graph[v][u]['label'])
 					predecessors[u] = v
+					something_has_changed = True
+
+			# early termination if running through each edge nothing has changed in the previous loop
+			if something_has_changed is False:
+				break
 			count -= 1
 
 		# checking for negative-weight cycles
@@ -117,9 +122,30 @@ class GraphManager:
 			elif distances[v] + float(self.graph[v][u]['label']) < distances[u]:
 				raise ValueError("Graph contains a negative-weight cycle")
 
-		#print(distances)
-		#print(predecessors)
 		return distances, predecessors
+
+	def bellman_ford_shortest_path(self, source_vertex, target_vertex):
+		"""Returns the shortest path from source to target in a weighted graph G in terms of a list of nodes """
+
+		# inverting source vertex to target. The shortest path between the two is the same, but the reverse of the
+		# list of shortest_path is not required: it is built using append (complexity O(1)) in the right ordering
+		tmp = source_vertex
+		source_vertex = target_vertex
+		target_vertex = tmp
+		distances, predecessors = self.bellman_ford(source_vertex)
+
+		# using the predecessors of each node to build the shortest path
+		shortest_path = []
+		current_node = target_vertex
+		shortest_path.append(target_vertex)
+		while current_node != source_vertex:
+			current_node = predecessors[current_node]
+			# raising an exception if there is not path between the two nodes at argument
+			if current_node is None:
+				raise Exception("There is no path between node "+target_vertex+" and node "+source_vertex)
+
+			shortest_path.append(current_node)
+		return shortest_path
 
 
 def main():
@@ -153,11 +179,12 @@ def main():
 		R.add_node_to_graph(i, x, y)
 	R.add_edges()
 
-	print("..my values: ", P.betweenness_centrality())
-	#print("..my values: ", R.betweenness_centrality())
-
 	# Executing Bellman-Ford
-	distances, predecessors = P.bellman_ford()
+	shortest_path = P.bellman_ford_shortest_path('Brindisi', 'Aosta')
+	print(shortest_path)
+
+	print("..my values: ", P.betweenness_centrality())
+	# print("..my values: ", R.betweenness_centrality())
 
 
 if __name__ == '__main__':
