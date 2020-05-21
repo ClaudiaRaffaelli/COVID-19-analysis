@@ -36,8 +36,6 @@ class GraphManager:
 					#  grafo (nell'immagine province.png'
 					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 2)))
 
-					self.graph.add_edge(nodes[i][0], nodes[j][0], label=self.truncate(distance, 2))
-
 
 	def plot_graph(self, graph_name):
 		print("Nodes in the graph:")
@@ -156,6 +154,7 @@ def main():
 	R.add_edges()
 
 	print("..my values: ", P.betweenness_centrality())
+	#print("..my values: ", R.betweenness_centrality())
 
 	# Executing Bellman-Ford
 	distances, predecessors = P.bellman_ford()
