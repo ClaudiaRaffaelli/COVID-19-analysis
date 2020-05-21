@@ -4,6 +4,7 @@ import math
 import random
 
 
+# TODO: inserire docstring per tutti i metodi
 class GraphManager:
 	graph = None
 
@@ -25,22 +26,21 @@ class GraphManager:
 				# checking if the two nodes are close enough
 				if(float(nodes[i][1]['x'])-d <= float(nodes[j][1]['x']) <= float(nodes[i][1]['x']+d) and
 							float(nodes[i][1]['y'])-d <= float(nodes[j][1]['y']) <= float(nodes[i][1]['y']+d)):
-					# TODO non sono sicuro se la distanza bisognava calcolarla facendo la distanza euclidea tra i punti
-					#  (x,y) di ogni provincia
 
 					#  Euclidean distance
-					distance_long = (float(nodes[i][1]['x']-float(nodes[j][1]['x']))) ** 2
-					distance_alt = (float(nodes[i][1]['y']-float(nodes[j][1]['y']))) ** 2
-					distance = math.sqrt(distance_long + distance_alt)
+					distance_long = (float(nodes[i][1]['x'])-float(nodes[j][1]['x'])) ** 2
+					distance_lat = (float(nodes[i][1]['y'])-float(nodes[j][1]['y'])) ** 2
+					distance = math.sqrt(distance_long + distance_lat)
 
 					# TODO l'attributo 'weight=' è stato sostituito con 'label=' perchè così veniva visualizzato sul
 					#  grafo (nell'immagine province.png'
 					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 2)))
 
+					self.graph.add_edge(nodes[i][0], nodes[j][0], label=self.truncate(distance, 2))
+
+
 	def plot_graph(self, graph_name):
-		# TODO, una prima veloce implementazione per visualizzare il grafo. E' molto confusionaria, eventualmente da
-		#  rivedere
-		print("Nodes in the tree:")
+		print("Nodes in the graph:")
 		print(list(self.graph.nodes(data=True)))
 
 		# plotting the graph
@@ -49,7 +49,7 @@ class GraphManager:
 		A.draw('./imgs/'+graph_name+'.png')
 
 	def truncate(self, f, n):
-		'''Truncates/pads a float f to n decimal places without rounding'''
+		"""Truncates/pads a float f to n decimal places without rounding"""
 		s = '%.12f' % f
 		i, p, d = s.partition('.')
 		return '.'.join([i, (d + '0' * n)[:n]])
@@ -77,9 +77,51 @@ class GraphManager:
 		return BC
 
 
+	def bellman_ford(self):
+		vertices = list(self.graph.nodes())
 
+		# setting a random vertex as source vertex
+		source_vertex = random.choice(vertices)
 
+		# Initialization of the graph
+		distances = dict.fromkeys(self.graph.nodes(), math.inf)
+		predecessors = dict.fromkeys(self.graph.nodes(), None)
 
+		# setting the distance from the source vertex and itself to 0
+		distances[source_vertex] = 0
+
+		# relax edges
+		# TODO chiedo un parere, nell'algoritmo di wiki il while era un for ed andava da 1 a len(vertices)-1
+		#  così però mi pare più corretto. A partire da un nodo infatti così dovresti poter raggiungere tutti gli
+		#  altri nodi nel caso limite in cui tutti i nodi sono posti in una lunga catena, dico bene?
+		#  Purtroppo a fare prove manuali si fa poco bene.
+		count = len(vertices)-1
+		while count > 0:
+			for (u, v) in self.graph.edges():
+				# TODO, parere anche qui. Gli archi nel grafo sono indiretti e se esiste (Chieti, L'aquila) non esiste
+				#  (L'aquila, Chieti). Affinché tutto funzionasse ho dovuto considerare anche la coppia amica mancante
+				#  nella lista degli archi. Non ho visto modo più carino per farlo, se ti viene in mente qualcosa dimmi
+				#  pure
+				if distances[u] + float(self.graph[u][v]['label']) < distances[v]:
+					distances[v] = distances[u] + float(self.graph[u][v]['label'])
+					predecessors[v] = u
+				elif distances[v] + float(self.graph[v][u]['label']) < distances[u]:
+					distances[u] = distances[v] + float(self.graph[v][u]['label'])
+					predecessors[u] = v
+			count -= 1
+
+		# checking for negative-weight cycles
+		for (u, v) in self.graph.edges():
+			# TODO nell'algoritmo di wiki c'era, anche se qui cicli con pesi negativi non dovrebbero essercene mai.
+			#  inoltre come prima ho ri-scritto quel discorso per considerare anche la coppia di arco amica
+			if distances[u] + float(self.graph[u][v]['label']) < distances[v]:
+				raise ValueError("Graph contains a negative-weight cycle")
+			elif distances[v] + float(self.graph[v][u]['label']) < distances[u]:
+				raise ValueError("Graph contains a negative-weight cycle")
+
+		#print(distances)
+		#print(predecessors)
+		return distances, predecessors
 
 
 def main():
@@ -113,8 +155,11 @@ def main():
 		R.add_node_to_graph(i, x, y)
 	R.add_edges()
 
-
 	print("..my values: ", P.betweenness_centrality())
+
+	# Executing Bellman-Ford
+	distances, predecessors = P.bellman_ford()
+
 
 if __name__ == '__main__':
 	main()
