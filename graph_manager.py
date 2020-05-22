@@ -7,9 +7,14 @@ import time
 
 # TODO: controlla i docstring per tutti i metodi
 class GraphManager:
+	"""
+	This is a class used to create, manage, draw and process some properties of graphs and, in particular, of its nodes
+	like: shortest path and betweenness of each node
+	"""
 	graph = None
 
 	def __init__(self):
+		""" The constructor for GraphManager class. It initialize a networkx Graph object """
 		# creating a graph
 		self.graph = nx.Graph()
 
