@@ -15,7 +15,7 @@ class GraphManager:
 	graph = None
 
 	def __init__(self):
-		""" The constructor for GraphManager class. It initialize a networkx Graph object """
+		""" The constructor for GraphManager class. It initializes a NetworkX Graph object """
 		# creating a graph
 		self.graph = nx.Graph()
 
@@ -23,21 +23,21 @@ class GraphManager:
 		"""
 		Utility for add_edges method
 
-		Paramenters
+		Parameters
 		-----------
-		city_name (string):
-			city's name which identify the node
-		position_x (float):
-			it's an attribute of the node which rappresent the longitude of the city
-		position_y (float):
-			it's an attribute of the node which rappresent the altitude of the city
+		city_name: string
+			city's name which identifies the node
+		position_x: float
+			it's an attribute of the node which represents the longitude of the city
+		position_y: float
+			it's an attribute of the node which represents the latitude of the city
 
 		"""
 		self.graph.add_node(city_name, x=position_x, y=position_y)
 
 	def add_edges(self):
 		"""
-		Each node corresponds to a city and two cities a and b are connected by an edge if the following holds:
+		Each node corresponds to a city. Two cities a and b are connected by an edge if the following holds:
 		if x,y is the position of a, then b is in position z,w with z in [x-d,x+d] and w in [y-d, y+d], with d=0.8.
 
 		"""
@@ -65,18 +65,17 @@ class GraphManager:
 
 		Parameters
 		----------
-		graph_name (string):
-			string used as the name of the .png file which will be stored in the imgs/
-			subdirectory
+		graph_name: string
+			string used as the name of the .png file which will be stored in the imgs subdirectory
 
 		"""
-		print("Nodes in the graph:")
-		print(list(self.graph.nodes(data=True)))
+		# print("Nodes in the graph:")
+		# print(list(self.graph.nodes(data=True)))
 
 		# plotting the graph
-		A = nx.nx_agraph.to_agraph(self.graph)
-		A.layout('dot', args='-Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
-		A.draw('./imgs/' + graph_name + '.png')
+		graph_to_be_plotted = nx.nx_agraph.to_agraph(self.graph)
+		graph_to_be_plotted.layout('dot', args='-Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
+		graph_to_be_plotted.draw('./imgs/' + graph_name + '.png')
 
 	def truncate(self, f, n):
 		"""Truncates/pads a float f to n decimal places without rounding"""
@@ -90,8 +89,8 @@ class GraphManager:
 
 		Returns
 		-------
-		BC (dictionary):
-			dictionary that has the names of the nodes as keys and each node contains its value of betweenness
+		BC: dictionary
+			a dictionary that has the names of the nodes as keys and each node contains its value of betweenness
 
 		Notes
 		-----
@@ -136,7 +135,7 @@ class GraphManager:
 
 		Returns
 		-------
-		distances, predecessors:
+		distances, predecessors: dictionaries
 			pair of dictionaries. distances takes as key a node_name, and as value the distance,
 			in terms of weight from source node to the current node_name. predecessors has as key a node_name, and as value
 			the predecessor node in the shortest path from source node to the current node_name
@@ -206,7 +205,7 @@ class GraphManager:
 
 		Returns
 		-------
-		distances, predecessors:
+		distances, predecessors: dictionaries
 			pair of dictionaries. distances takes as key a node_name, and as value the distance,
 			in terms of weight from source node to the current node_name. predecessors has as key a node_name, and as value
 			the predecessor node in the shortest path from source node to the current node_name
@@ -259,7 +258,7 @@ class GraphManager:
 
 		Returns
 		-------
-		shortest_path:
+		shortest_path: list
 			list of nodes indicating the shortest path from source_vertex to target_vertex
 		Raises
 		------
@@ -317,7 +316,7 @@ def main():
 	for i in range(2000):
 		x = random.randrange(30, 50)
 		y = random.randrange(10, 20)
-		R.add_node_to_graph(i, x, y)
+		R.add_node_to_graph(str(i), x, y)
 	R.add_edges()
 
 	# Executing Bellman-Ford
