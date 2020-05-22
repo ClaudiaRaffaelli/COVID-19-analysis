@@ -6,7 +6,6 @@ import time
 from collections import deque
 
 
-# TODO: controlla i docstring per tutti i metodi
 class GraphManager:
 	"""
 	This is a class used to create, manage, draw and process some properties of graphs and, in particular, of its nodes
@@ -45,7 +44,6 @@ class GraphManager:
 		d = 0.8
 		# comparing each node in the graph with the subsequent nodes. Not checking the nodes before the current node
 		# because the graph is symmetrical
-		# TODO è il modo più efficiente per realizzare la cosa? Costa comunque O(n^2)
 		nodes = list(self.graph.nodes(data=True))
 		for i in range(len(nodes) - 1):
 			for j in range(i + 1, len(nodes)):
@@ -78,7 +76,21 @@ class GraphManager:
 		graph_to_be_plotted.draw('./imgs/' + graph_name + '.png')
 
 	def truncate(self, f, n):
-		"""Truncates/pads a float f to n decimal places without rounding"""
+		"""
+		Truncates/pads a float f to n decimal places without rounding
+
+		Parameters
+		----------
+		f: float
+			float to be truncated
+		n: int
+			decimal places required for truncating
+
+		Returns
+		-------
+		_: float
+			a truncated number
+		"""
 		s = '%.12f' % f
 		i, p, d = s.partition('.')
 		return '.'.join([i, (d + '0' * n)[:n]])
@@ -120,7 +132,7 @@ class GraphManager:
 					if nodes[target_node][0] in path:
 						num += 1
 					den += 1
-			BC[nodes[target_node][0]] = (num / den)/2 # The shortest path are calculated two times, so we dived by 2
+			BC[nodes[target_node][0]] = (num / den)/2  # The shortest path are calculated two times, so we dived by 2
 		return BC
 
 	def bellman_ford(self, source_vertex):
@@ -246,28 +258,28 @@ class GraphManager:
 		return distances, predecessors
 
 	def bellman_ford_shortest_path(self, source_vertex):
-		"""Finds all the shortest path from source vertex to all the nodes in a weighted graph G in terms of a list of
+		"""Finds all the shortest paths from source vertex to all the nodes in a weighted graph G in terms of a list of
 		lists of nodes. Uses bellman_ford method or the optimized version bellman_ford_SPFA.
 
 		Parameters
 		----------
 		source_vertex : node label
 			Starting node for the path
-		target_vertex: node label
-			Ending node for the path
 
 		Returns
 		-------
-		shortest_path: list
-			list of nodes indicating the shortest path from source_vertex to target_vertex
+		all__shortest_path: list of list
+			list of list of nodes indicating the shortest path from source_vertex to all the other vertex in the graph
 		Raises
 		------
 		ValueError
 			If there is no path between the starting node and target node
-		"""
 
-		# inverting source vertex to target. The shortest path between the two is the same, but the reverse of the
-		# list of shortest_path is not required: it is built using append (complexity O(1)) in the right ordering
+		Notes
+		-----
+			Each shortest path returned is provided in the reverse order, that is, source_vertex is the last element
+			of the list.
+		"""
 
 		distances, predecessors = self.bellman_ford_SPFA(source_vertex)
 
@@ -283,7 +295,7 @@ class GraphManager:
 			shortest_path.append(target_vertex)
 			while current_node != source_vertex:
 				current_node = predecessors[current_node]
-				# raising an exception if there is not path between the two nodes at argument
+				# raising an exception if there is not path between the two nodes considered
 				if current_node is None:
 					raise ValueError("There is no path between node " + target_vertex + " and node " + source_vertex)
 
