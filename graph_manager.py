@@ -3,6 +3,7 @@ import json
 import math
 import random
 import time
+from collections import deque
 
 
 # TODO: inserire docstring per tutti i metodi
@@ -54,10 +55,10 @@ class GraphManager:
 		#  con questa funzione
 		print("True values: ", nx.betweenness_centrality(self.graph, normalized=True, endpoints=False))
 		nodes = list(self.graph.nodes(data=True))
-		shortest_paths = []    # Store all the shortest path between each pair of nodes in the graph
+		shortest_paths = []  # Store all the shortest path between each pair of nodes in the graph
 		for i in range(len(nodes)):
 			for j in range(i + 1, len(nodes)):
-				try: # there may not be a path between two nodes
+				try:  # there may not be a path between two nodes
 					shortest_paths.append(self.bellman_ford_shortest_path(nodes[i][0], nodes[j][0]))
 				except:
 					pass
@@ -145,9 +146,62 @@ class GraphManager:
 		'''
 		return distances, predecessors
 
+	def bellman_ford_SPFA(self, source_vertex):
+		"""Finds the shortest path from source vertex to all the others in the graph implementing the optimized version
+		of Bellman Ford algorithm: Shortest Path First Algorithm (SPFA).
+
+		Utility for bellman_ford_shortest_path method.
+
+		Parameters
+		----------
+		source_vertex : node label
+			Starting node for the path
+
+		Returns
+		-------
+		distances, predecessors:
+			pair of dictionaries. distances takes as key a node_name, and as value the distance,
+			in terms of weight from source node to the current node_name. predecessors has as key a node_name, and as value
+			the predecessor node in the shortest path from source node to the current node_name
+
+		Notes
+		-----
+		Distances are calculated as sums of weighted edges traversed.
+		"""
+		# Initialization of the graph
+		distances = dict.fromkeys(self.graph.nodes(), math.inf)
+		already_in_queue = dict.fromkeys(self.graph.nodes(), False)
+		predecessors = dict.fromkeys(self.graph.nodes(), math.inf)
+
+		# setting the distance from the source vertex and itself to 0
+		distances[source_vertex] = 0
+		q = deque()
+		q.append(source_vertex)
+		already_in_queue[source_vertex] = True
+
+		while len(q) > 0:
+			u = q.popleft()
+
+			for (u, v) in self.graph.edges(u):
+				if distances[u] + float(self.graph[u][v]['label']) < distances[v]:
+					distances[v] = distances[u] + float(self.graph[u][v]['label'])
+					if not already_in_queue[v]:
+						q.append(v)
+						already_in_queue[v] = True
+					predecessors[v] = u
+
+				if distances[v] + float(self.graph[v][u]['label']) < distances[u]:
+					distances[u] = distances[v] + float(self.graph[v][u]['label'])
+					if not already_in_queue[u]:
+						q.append(u)
+						already_in_queue[u] = True
+					predecessors[u] = v
+
+		return distances, predecessors
+
 	def bellman_ford_shortest_path(self, source_vertex, target_vertex):
 		"""Finds the shortest path from source to target in a weighted graph G in terms of a list of nodes.
-		Uses bellman_ford method.
+		Uses bellman_ford method or the optimized version bellman_ford_SPFA.
 
 		Parameters
 		----------
@@ -171,7 +225,7 @@ class GraphManager:
 		tmp = source_vertex
 		source_vertex = target_vertex
 		target_vertex = tmp
-		distances, predecessors = self.bellman_ford(source_vertex)
+		distances, predecessors = self.bellman_ford_SPFA(source_vertex)
 
 		# using the predecessors of each node to build the shortest path
 		shortest_path = []
@@ -233,9 +287,7 @@ def main():
 	print(path_vero)
 	'''
 
-	print("..my values: ", P.betweenness_centrality())
-	# print("..my values: ", R.betweenness_centrality())
-
+	#print("..my values: ", P.betweenness_centrality())
 
 if __name__ == '__main__':
 	main()
