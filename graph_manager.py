@@ -32,7 +32,7 @@ class GraphManager:
 					distance_lat = (float(nodes[i][1]['y']) - float(nodes[j][1]['y'])) ** 2
 					distance = math.sqrt(distance_long + distance_lat)
 
-					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 2)))
+					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 6)))
 
 	def plot_graph(self, graph_name):
 		print("Nodes in the graph:")
@@ -50,15 +50,20 @@ class GraphManager:
 		return '.'.join([i, (d + '0' * n)[:n]])
 
 	def betweenness_centrality(self):
-		print("True values: ", nx.betweenness_centrality(self.graph))
+		# TODO Migliorare eventualmente i valori ottenuti con nx.betweenness_centrality() rispetto a quelli calcolati
+		#  con questa funzione
+		print("True values: ", nx.betweenness_centrality(self.graph, normalized=True, endpoints=False))
 		nodes = list(self.graph.nodes(data=True))
-		shortest_paths = []
+		shortest_paths = []    # Store all the shortest path between each pair of nodes in the graph
 		for i in range(len(nodes)):
 			for j in range(i + 1, len(nodes)):
-				try:
-					shortest_paths.append(nx.bellman_ford_path(self.graph, nodes[i][0], nodes[j][0], weight="label"))
+				try: # there may not be a path between two nodes
+					shortest_paths.append(self.bellman_ford_shortest_path(nodes[i][0], nodes[j][0]))
 				except:
 					pass
+
+		# Store the Betweenness Centrality for each node. For now, we suppose there is only 1 shortest path
+		# between 2 nodes
 		BC = {}
 		for target_node in range(len(nodes)):
 			num = 0
@@ -214,8 +219,6 @@ def main():
 		R.add_node_to_graph(i, x, y)
 	R.add_edges()
 
-	print("..my values: ", P.betweenness_centrality())
-
 	# Executing Bellman-Ford
 	'''
 	start_time = time.time()
@@ -229,6 +232,9 @@ def main():
 	print(path)
 	print(path_vero)
 	'''
+
+	print("..my values: ", P.betweenness_centrality())
+	# print("..my values: ", R.betweenness_centrality())
 
 
 if __name__ == '__main__':
