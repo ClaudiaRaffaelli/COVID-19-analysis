@@ -2,6 +2,7 @@ import networkx as nx
 import json
 import math
 import random
+import time
 
 
 # TODO: inserire docstring per tutti i metodi
@@ -21,15 +22,14 @@ class GraphManager:
 		# because the graph is symmetrical
 		# TODO è il modo più efficiente per realizzare la cosa? Costa comunque O(n^2)
 		nodes = list(self.graph.nodes(data=True))
-		for i in range(len(nodes)-1):
-			for j in range(i+1, len(nodes)):
+		for i in range(len(nodes) - 1):
+			for j in range(i + 1, len(nodes)):
 				# checking if the two nodes are close enough
-				if(float(nodes[i][1]['x'])-d <= float(nodes[j][1]['x']) <= float(nodes[i][1]['x']+d) and
-							float(nodes[i][1]['y'])-d <= float(nodes[j][1]['y']) <= float(nodes[i][1]['y']+d)):
-
+				if (float(nodes[i][1]['x']) - d <= float(nodes[j][1]['x']) <= float(nodes[i][1]['x'] + d) and
+						float(nodes[i][1]['y']) - d <= float(nodes[j][1]['y']) <= float(nodes[i][1]['y'] + d)):
 					#  Euclidean distance
-					distance_long = (float(nodes[i][1]['x'])-float(nodes[j][1]['x'])) ** 2
-					distance_lat = (float(nodes[i][1]['y'])-float(nodes[j][1]['y'])) ** 2
+					distance_long = (float(nodes[i][1]['x']) - float(nodes[j][1]['x'])) ** 2
+					distance_lat = (float(nodes[i][1]['y']) - float(nodes[j][1]['y'])) ** 2
 					distance = math.sqrt(distance_long + distance_lat)
 
 					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 2)))
@@ -41,7 +41,7 @@ class GraphManager:
 		# plotting the graph
 		A = nx.nx_agraph.to_agraph(self.graph)
 		A.layout('dot', args='-Nwidth=".2" -Nheight=".2" -Nmargin=0 -Gfontsize=8')
-		A.draw('./imgs/'+graph_name+'.png')
+		A.draw('./imgs/' + graph_name + '.png')
 
 	def truncate(self, f, n):
 		"""Truncates/pads a float f to n decimal places without rounding"""
@@ -68,10 +68,36 @@ class GraphManager:
 					if nodes[target_node][0] in path:
 						num += 1
 					den += 1
-			BC[nodes[target_node][0]] = num/den
+			BC[nodes[target_node][0]] = num / den
 		return BC
 
 	def bellman_ford(self, source_vertex):
+		"""Finds the shortest path from source vertex to all the others in the graph.
+
+		Utility for bellman_ford_shortest_path method.
+
+		Parameters
+		----------
+		source_vertex : node label
+			Starting node for the path
+
+		Returns
+		-------
+		distances, predecessors:
+			pair of dictionaries. distances takes as key a node_name, and as value the distance,
+			in terms of weight from source node to the current node_name. predecessors has as key a node_name, and as value
+			the predecessor node in the shortest path from source node to the current node_name
+
+		Raises
+		------
+		ValueError
+			If the graph contains a negative-weight cycle
+
+		Notes
+		-----
+		Distances are calculated as sums of weighted edges traversed.
+		"""
+
 		vertices = list(self.graph.nodes())
 
 		# Initialization of the graph
@@ -82,23 +108,17 @@ class GraphManager:
 		distances[source_vertex] = 0
 
 		# relax edges
-		# TODO chiedo un parere, nell'algoritmo di wiki il while era un for ed andava da 1 a len(vertices)-1
-		#  così però mi pare più corretto. A partire da un nodo infatti così dovresti poter raggiungere tutti gli
-		#  altri nodi nel caso limite in cui tutti i nodi sono posti in una lunga catena, dico bene?
-		#  Purtroppo a fare prove manuali si fa poco bene.
-		count = len(vertices)-1
+		count = len(vertices) - 1
 		while count > 0:
 			something_has_changed = False
 			for (u, v) in self.graph.edges():
-				# TODO, parere anche qui. Gli archi nel grafo sono indiretti e se esiste (Chieti, L'aquila) non esiste
-				#  (L'aquila, Chieti). Affinché tutto funzionasse ho dovuto considerare anche la coppia amica mancante
-				#  nella lista degli archi. Non ho visto modo più carino per farlo, se ti viene in mente qualcosa dimmi
-				#  pure
+				# because the Bellman Ford algorithm works with digraphs we have to consider both the symmetric edges
+				# in the form (u, v) and (v, u)
 				if distances[u] + float(self.graph[u][v]['label']) < distances[v]:
 					distances[v] = distances[u] + float(self.graph[u][v]['label'])
 					predecessors[v] = u
 					something_has_changed = True
-				elif distances[v] + float(self.graph[v][u]['label']) < distances[u]:
+				if distances[v] + float(self.graph[v][u]['label']) < distances[u]:
 					distances[u] = distances[v] + float(self.graph[v][u]['label'])
 					predecessors[u] = v
 					something_has_changed = True
@@ -108,19 +128,38 @@ class GraphManager:
 				break
 			count -= 1
 
-		# checking for negative-weight cycles
+		'''
+		# checking for negative-weight cycles. In fact because we are working with an undirected graph, if an edge
+		# has a negative weight associated with it, it will count as a negative-weight cycle.
 		for (u, v) in self.graph.edges():
-			# TODO nell'algoritmo di wiki c'era, anche se qui cicli con pesi negativi non dovrebbero essercene mai.
-			#  inoltre come prima ho ri-scritto quel discorso per considerare anche la coppia di arco amica
+			# as before, considering both the symmetric edges in the form (u, v) and (v, u)
 			if distances[u] + float(self.graph[u][v]['label']) < distances[v]:
 				raise ValueError("Graph contains a negative-weight cycle")
-			elif distances[v] + float(self.graph[v][u]['label']) < distances[u]:
+			if distances[v] + float(self.graph[v][u]['label']) < distances[u]:
 				raise ValueError("Graph contains a negative-weight cycle")
-
+		'''
 		return distances, predecessors
 
 	def bellman_ford_shortest_path(self, source_vertex, target_vertex):
-		"""Returns the shortest path from source to target in a weighted graph G in terms of a list of nodes """
+		"""Finds the shortest path from source to target in a weighted graph G in terms of a list of nodes.
+		Uses bellman_ford method.
+
+		Parameters
+		----------
+		source_vertex : node label
+			Starting node for the path
+		target_vertex: node label
+			Ending node for the path
+
+		Returns
+		-------
+		shortest_path:
+			list of nodes indicating the shortest path from source_vertex to target_vertex
+		Raises
+		------
+		ValueError
+			If there is no path between the starting node and target node
+		"""
 
 		# inverting source vertex to target. The shortest path between the two is the same, but the reverse of the
 		# list of shortest_path is not required: it is built using append (complexity O(1)) in the right ordering
@@ -137,7 +176,7 @@ class GraphManager:
 			current_node = predecessors[current_node]
 			# raising an exception if there is not path between the two nodes at argument
 			if current_node is None:
-				raise Exception("There is no path between node "+target_vertex+" and node "+source_vertex)
+				raise ValueError("There is no path between node " + target_vertex + " and node " + source_vertex)
 
 			shortest_path.append(current_node)
 		return shortest_path
@@ -153,7 +192,8 @@ def main():
 	P = GraphManager()
 	for province_data in parsed_file:
 		# extracting information from the JSON
-		if province_data['sigla_provincia'] != '' and province_data['sigla_provincia'] not in provinces_already_annotated:
+		if province_data['sigla_provincia'] != '' and province_data[
+			'sigla_provincia'] not in provinces_already_annotated:
 			provinces_already_annotated.append(province_data['sigla_provincia'])
 			province = province_data['denominazione_provincia']
 			position_x = province_data['long']
@@ -177,8 +217,18 @@ def main():
 	print("..my values: ", P.betweenness_centrality())
 
 	# Executing Bellman-Ford
-	shortest_path = P.bellman_ford_shortest_path('Brindisi', 'Aosta')
-	print(shortest_path)
+	'''
+	start_time = time.time()
+	path = P.bellman_ford_shortest_path('Enna', 'Catanzaro')
+	end_time = time.time()
+	print("tempo mio: " + str(end_time - start_time))
+	start_time = time.time()
+	path_vero = nx.bellman_ford_path(P.graph, 'Enna', 'Catanzaro', weight="label")
+	end_time = time.time()
+	print("tempo networkx: " + str(end_time - start_time))
+	print(path)
+	print(path_vero)
+	'''
 
 
 if __name__ == '__main__':
