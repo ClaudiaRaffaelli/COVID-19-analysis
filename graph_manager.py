@@ -6,18 +6,42 @@ import time
 from collections import deque
 
 
-# TODO: inserire docstring per tutti i metodi
+# TODO: controlla i docstring per tutti i metodi
 class GraphManager:
+	"""
+	This is a class used to create, manage, draw and process some properties of graphs and, in particular, of its nodes
+	like: shortest path and betweenness of each node
+	"""
 	graph = None
 
 	def __init__(self):
+		""" The constructor for GraphManager class. It initialize a networkx Graph object """
 		# creating a graph
 		self.graph = nx.Graph()
 
 	def add_node_to_graph(self, city_name, position_x, position_y):
+		"""
+		Utility for add_edges method
+
+		Paramenters
+		-----------
+		city_name (string):
+			city's name which identify the node
+		position_x (float):
+			it's an attribute of the node which rappresent the longitude of the city
+		position_y (float):
+			it's an attribute of the node which rappresent the altitude of the city
+
+		"""
 		self.graph.add_node(city_name, x=position_x, y=position_y)
 
 	def add_edges(self):
+		"""
+		Each node corresponds to a city and two cities a and b are connected by an edge if the following holds:
+		if x,y is the position of a, then b is in position z,w with z in [x-d,x+d] and w in [y-d, y+d], with d=0.8.
+
+		"""
+
 		d = 0.8
 		# comparing each node in the graph with the subsequent nodes. Not checking the nodes before the current node
 		# because the graph is symmetrical
@@ -36,6 +60,16 @@ class GraphManager:
 					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 6)))
 
 	def plot_graph(self, graph_name):
+		"""
+		Utility function used to draw the graph and save it as a .png file
+
+		Parameters
+		----------
+		graph_name (string):
+			string used as the name of the .png file which will be stored in the imgs/
+			subdirectory
+
+		"""
 		print("Nodes in the graph:")
 		print(list(self.graph.nodes(data=True)))
 
@@ -51,8 +85,21 @@ class GraphManager:
 		return '.'.join([i, (d + '0' * n)[:n]])
 
 	def betweenness_centrality(self):
-		# TODO Migliorare eventualmente i valori ottenuti con nx.betweenness_centrality() rispetto a quelli calcolati
-		#  con questa funzione
+		"""
+		Finds the betweenness value for each node in the graph
+
+		Returns
+		-------
+		BC (dictionary):
+			dictionary that has the names of the nodes as keys and each node contains its value of betweenness
+
+		Notes
+		-----
+		We assume there is only one shortest path between two nodes
+
+		"""
+		# TODO Migliorare eventualmente i valori ottenuti con questa funzione rispetto a quelli calcolati
+		#  con nx.betweenness_centrality()
 		print("True values: ", nx.betweenness_centrality(self.graph, normalized=True, endpoints=False))
 		nodes = list(self.graph.nodes(data=True))
 		shortest_paths = []  # Store all the shortest path between each pair of nodes in the graph
