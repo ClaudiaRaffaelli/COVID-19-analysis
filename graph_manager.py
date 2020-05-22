@@ -98,17 +98,17 @@ class GraphManager:
 		We assume there is only one shortest path between two nodes
 
 		"""
-		# TODO Migliorare eventualmente i valori ottenuti con questa funzione rispetto a quelli calcolati
-		#  con nx.betweenness_centrality()
-		print("True values: ", nx.betweenness_centrality(self.graph, normalized=True, endpoints=False))
+		# TODO I shortest path vengono calcolati 2 volte (in entrambe le direzioni) invece che una
+		print("Nx betwwenness values: ", nx.betweenness_centrality(self.graph, normalized=True, endpoints=False))
 		nodes = list(self.graph.nodes(data=True))
 		shortest_paths = []  # Store all the shortest path between each pair of nodes in the graph
 		for i in range(len(nodes)):
-			for j in range(i + 1, len(nodes)):
-				try:  # there may not be a path between two nodes
-					shortest_paths.append(self.bellman_ford_shortest_path(nodes[i][0], nodes[j][0]))
-				except:
-					pass
+			try:  # there may not be a path between two nodes
+				paths_lists = self.bellman_ford_shortest_path(nodes[i][0])
+				for p in paths_lists:
+					shortest_paths.append(p)
+			except:
+				pass
 
 		# Store the Betweenness Centrality for each node. For now, we suppose there is only 1 shortest path
 		# between 2 nodes
@@ -121,7 +121,7 @@ class GraphManager:
 					if nodes[target_node][0] in path:
 						num += 1
 					den += 1
-			BC[nodes[target_node][0]] = num / den
+			BC[nodes[target_node][0]] = (num / den)/2 # The shortest path are calculated two times, so we dived by 2
 		return BC
 
 	def bellman_ford(self, source_vertex):
@@ -246,9 +246,9 @@ class GraphManager:
 
 		return distances, predecessors
 
-	def bellman_ford_shortest_path(self, source_vertex, target_vertex):
-		"""Finds the shortest path from source to target in a weighted graph G in terms of a list of nodes.
-		Uses bellman_ford method or the optimized version bellman_ford_SPFA.
+	def bellman_ford_shortest_path(self, source_vertex):
+		"""Finds all the shortest path from source vertex to all the nodes in a weighted graph G in terms of a list of
+		lists of nodes. Uses bellman_ford method or the optimized version bellman_ford_SPFA.
 
 		Parameters
 		----------
@@ -269,23 +269,28 @@ class GraphManager:
 
 		# inverting source vertex to target. The shortest path between the two is the same, but the reverse of the
 		# list of shortest_path is not required: it is built using append (complexity O(1)) in the right ordering
-		tmp = source_vertex
-		source_vertex = target_vertex
-		target_vertex = tmp
+
 		distances, predecessors = self.bellman_ford_SPFA(source_vertex)
 
-		# using the predecessors of each node to build the shortest path
-		shortest_path = []
-		current_node = target_vertex
-		shortest_path.append(target_vertex)
-		while current_node != source_vertex:
-			current_node = predecessors[current_node]
-			# raising an exception if there is not path between the two nodes at argument
-			if current_node is None:
-				raise ValueError("There is no path between node " + target_vertex + " and node " + source_vertex)
+		all__shortest_paths = []
+		nodes = list(self.graph.nodes(data=True))
+		for target_vertex in nodes:
+			target_vertex = target_vertex[0]
+			if predecessors[target_vertex] == math.inf:
+				continue
+			# using the predecessors of each node to build the shortest path
+			shortest_path = []
+			current_node = target_vertex
+			shortest_path.append(target_vertex)
+			while current_node != source_vertex:
+				current_node = predecessors[current_node]
+				# raising an exception if there is not path between the two nodes at argument
+				if current_node is None:
+					raise ValueError("There is no path between node " + target_vertex + " and node " + source_vertex)
 
-			shortest_path.append(current_node)
-		return shortest_path
+				shortest_path.append(current_node)
+			all__shortest_paths.append(shortest_path)
+		return all__shortest_paths
 
 
 def main():
@@ -334,7 +339,12 @@ def main():
 	print(path_vero)
 	'''
 
-	#print("..my values: ", P.betweenness_centrality())
+	# Betweenness
+	start = time.time()
+	print("My betwwenness values: ", P.betweenness_centrality())
+	end = time.time()
+	print("Tempo per la betweenness:", end-start)
+	
 
 if __name__ == '__main__':
 	main()
