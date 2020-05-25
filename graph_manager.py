@@ -41,10 +41,6 @@ class GraphManager:
 		"""
 
 		d = 0.8
-		# comparing each node in the graph with the subsequent nodes. Not checking the nodes before the current node
-		# because the graph is symmetrical
-		#nodes = list(self.graph.nodes(data=True))
-
 		# Creating a dictionary with key the node name and value
 		nodes = {key: value for (key, value) in self.graph.nodes(data=True)}
 		
@@ -52,7 +48,9 @@ class GraphManager:
 		nodes_sorted_by_x = [(k, nodes[k]) for k in sorted(nodes, key=lambda x: nodes[x]['x'], reverse=False)]
 		i = 0
 		j = 1
+		# Iterating over the list of nodes ordered by x
 		while i < len(nodes_sorted_by_x) - 1:
+			# if the nodes indexed by i and j are close enough relatively to x and y, then we add an edge
 			if (float(nodes_sorted_by_x[i][1]['x']) - d <= float(nodes_sorted_by_x[j][1]['x']) <= float(
 					nodes_sorted_by_x[i][1]['x']) + d):
 				if float(nodes_sorted_by_x[i][1]['y']) - d <= float(nodes_sorted_by_x[j][1]['y']) <= float(nodes_sorted_by_x[i][1]['y']) + d:
@@ -66,11 +64,15 @@ class GraphManager:
 										label=float(self.truncate(distance, 6)))
 					j += 1
 				else:
+					# if the nodes indexed by i and j were close only relatively to x, since the list is not ordered by
+					# the y values we just increment j in order to pick compare the node i to the next one
 					j += 1
-				# if j goes out of range there are no more nodes to compare to the node indexed by i
+				# if j goes out of range there are no more nodes to compare the node indexed by i to
 				if j >= len(nodes_sorted_by_x):
 					i += 1
 					j = i + 1
+			# if the node indexed by i and the node indexed by j are not close enough relatively to x, then there is no
+			# point in checking the node i with the next one (j+1).
 			else:
 				i += 1
 				j = i+1
