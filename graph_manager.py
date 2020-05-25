@@ -36,26 +36,44 @@ class GraphManager:
 
 	def add_edges(self):
 		"""
-		Each node corresponds to a city. Two cities a and b are connected by an edge if the following holds:
+		Utility that adds edges to the graph. Two nodes a and b are connected by an edge if the following holds:
 		if x,y is the position of a, then b is in position z,w with z in [x-d,x+d] and w in [y-d, y+d], with d=0.8.
-
 		"""
 
 		d = 0.8
 		# comparing each node in the graph with the subsequent nodes. Not checking the nodes before the current node
 		# because the graph is symmetrical
-		nodes = list(self.graph.nodes(data=True))
-		for i in range(len(nodes) - 1):
-			for j in range(i + 1, len(nodes)):
-				# checking if the two nodes are close enough
-				if (float(nodes[i][1]['x']) - d <= float(nodes[j][1]['x']) <= float(nodes[i][1]['x'] + d) and
-						float(nodes[i][1]['y']) - d <= float(nodes[j][1]['y']) <= float(nodes[i][1]['y'] + d)):
+		#nodes = list(self.graph.nodes(data=True))
+
+		# Creating a dictionary with key the node name and value
+		nodes = {key: value for (key, value) in self.graph.nodes(data=True)}
+		
+		# Sorting the dictionary by value 'x'
+		nodes_sorted_by_x = [(k, nodes[k]) for k in sorted(nodes, key=lambda x: nodes[x]['x'], reverse=False)]
+		i = 0
+		j = 1
+		while i < len(nodes_sorted_by_x) - 1:
+			if (float(nodes_sorted_by_x[i][1]['x']) - d <= float(nodes_sorted_by_x[j][1]['x']) <= float(
+					nodes_sorted_by_x[i][1]['x']) + d):
+				if float(nodes_sorted_by_x[i][1]['y']) - d <= float(nodes_sorted_by_x[j][1]['y']) <= float(nodes_sorted_by_x[i][1]['y']) + d:
+
 					#  Euclidean distance
-					distance_long = (float(nodes[i][1]['x']) - float(nodes[j][1]['x'])) ** 2
-					distance_lat = (float(nodes[i][1]['y']) - float(nodes[j][1]['y'])) ** 2
+					distance_long = (float(nodes_sorted_by_x[i][1]['x']) - float(nodes_sorted_by_x[j][1]['x'])) ** 2
+					distance_lat = (float(nodes_sorted_by_x[i][1]['y']) - float(nodes_sorted_by_x[j][1]['y'])) ** 2
 					distance = math.sqrt(distance_long + distance_lat)
 
-					self.graph.add_edge(nodes[i][0], nodes[j][0], label=float(self.truncate(distance, 6)))
+					self.graph.add_edge(nodes_sorted_by_x[i][0], nodes_sorted_by_x[j][0],
+										label=float(self.truncate(distance, 6)))
+					j += 1
+				else:
+					j += 1
+				# if j goes out of range there are no more nodes to compare to the node indexed by i
+				if j >= len(nodes_sorted_by_x):
+					i += 1
+					j = i + 1
+			else:
+				i += 1
+				j = i+1
 
 	def plot_graph(self, graph_name):
 		"""
@@ -132,7 +150,7 @@ class GraphManager:
 					if nodes[target_node][0] in path:
 						num += 1
 					den += 1
-			BC[nodes[target_node][0]] = (num / den)/2  # The shortest path are calculated two times, so we dived by 2
+			BC[nodes[target_node][0]] = (num / den) / 2  # The shortest path are calculated two times, so we dived by 2
 		return BC
 
 	def bellman_ford(self, source_vertex):
@@ -324,7 +342,13 @@ def main():
 			P.add_node_to_graph(province, position_x, position_y)
 
 	# Inserting the edges according to the distance between each node
+	start_time = time.time()
 	P.add_edges()
+	end_time = time.time()
+	print("tempo aggiunta archi P: " + str(end_time - start_time))
+	# tempo aggiunta archi P vecchio: 0.003918886184692383
+	# tempo aggiunta archi P nuovo: 0.0021970272064208984
+
 	P.plot_graph('province')
 
 	# Building the graph of doubles
@@ -334,7 +358,13 @@ def main():
 		x = random.randrange(30, 50)
 		y = random.randrange(10, 20)
 		R.add_node_to_graph(str(i), x, y)
+
+	start_time = time.time()
 	R.add_edges()
+	end_time = time.time()
+	print("tempo aggiunta archi R: " + str(end_time - start_time))
+	# tempo aggiunta archi R vecchio: 1.072253942489624
+	# tempo aggiunta archi R nuovo: 0.16389083862304688
 
 	# Executing Bellman-Ford
 	'''
@@ -354,8 +384,8 @@ def main():
 	start = time.time()
 	print("My betwwenness values: ", P.betweenness_centrality())
 	end = time.time()
-	print("Tempo per la betweenness:", end-start)
-	
+	print("Tempo per la betweenness:", end - start)
+
 
 if __name__ == '__main__':
 	main()
