@@ -76,7 +76,7 @@ class GraphManager:
 			# point in checking the node i with the next one (j+1).
 			else:
 				i += 1
-				j = i+1
+				j = i + 1
 
 	def plot_graph(self, graph_name):
 		"""
