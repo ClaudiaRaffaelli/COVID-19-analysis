@@ -51,8 +51,7 @@ class GraphManager:
 		# Iterating over the list of nodes ordered by x
 		while i < len(nodes_sorted_by_x) - 1:
 			# if the nodes indexed by i and j are close enough relatively to x and y, then we add an edge
-			if (float(nodes_sorted_by_x[i][1]['x']) - d <= float(nodes_sorted_by_x[j][1]['x']) <= float(
-					nodes_sorted_by_x[i][1]['x']) + d):
+			if float(nodes_sorted_by_x[j][1]['x']) <= float(nodes_sorted_by_x[i][1]['x']) + d:
 				if float(nodes_sorted_by_x[i][1]['y']) - d <= float(nodes_sorted_by_x[j][1]['y']) <= float(nodes_sorted_by_x[i][1]['y']) + d:
 
 					#  Euclidean distance
@@ -62,11 +61,10 @@ class GraphManager:
 
 					self.graph.add_edge(nodes_sorted_by_x[i][0], nodes_sorted_by_x[j][0],
 										label=float(self.truncate(distance, 6)))
-					j += 1
-				else:
-					# if the nodes indexed by i and j were close only relatively to x, since the list is not ordered by
-					# the y values we just increment j in order to pick compare the node i to the next one
-					j += 1
+
+				# if the nodes indexed by i and j were close only relatively to x, since the list is not ordered by
+				# the y values we just increment j in order to pick compare the node i to the next one
+				j += 1
 				# if j goes out of range there are no more nodes to compare the node indexed by i to
 				if j >= len(nodes_sorted_by_x):
 					i += 1
