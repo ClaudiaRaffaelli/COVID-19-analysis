@@ -11,7 +11,7 @@ Link to Jupyter Notebooks:
 ## About the project
 TODO: insert small description
 
-## Struttura del repository
+## Repository structure
 ```
 ├── covid-19_pandas_analysis.ipynb
 ├── dati-json
