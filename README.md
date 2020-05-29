@@ -11,6 +11,43 @@ Link to Jupyter Notebooks:
 ## About the project
 TODO: insert small description
 
+## Repository structure
+```
+├── covid-19_pandas_analysis.ipynb
+├── dati-json
+│   ├── dpc-covid19-ita-province.json
+│   └── dpc-covid19-ita-regioni.json
+├── graph_manager.py
+├── LICENSE
+├── README.md
+└── shape-italy
+    ├── ITA_adm0.cpg
+    ├── ITA_adm0.csv
+    ├── ITA_adm0.dbf
+    ├── ITA_adm0.prj
+    ├── ITA_adm0.shp
+    ├── ITA_adm0.shx
+    ├── ITA_adm1.cpg
+    ├── ITA_adm1.csv
+    ├── ITA_adm1.dbf
+    ├── ITA_adm1.prj
+    ├── ITA_adm1.shp
+    ├── ITA_adm1.shx
+    ├── ITA_adm2.cpg
+    ├── ITA_adm2.csv
+    ├── ITA_adm2.dbf
+    ├── ITA_adm2.prj
+    ├── ITA_adm2.shp
+    ├── ITA_adm2.shx
+    ├── ITA_adm3.cpg
+    ├── ITA_adm3.csv
+    ├── ITA_adm3.dbf
+    ├── ITA_adm3.prj
+    ├── ITA_adm3.shp
+    ├── ITA_adm3.shx
+    └── license.txt
+```
+
 ## Authors
 - [Abdullah Chaudhry](https://github.com/chabdullah)
 - [Claudia Raffaelli](https://github.com/ClaudiaRaffaelli)
