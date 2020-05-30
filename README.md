@@ -2,14 +2,22 @@
 [![Python 3.7](https://img.shields.io/badge/python-3.7-blue.svg)](https://www.python.org/downloads/release/python-370/)
 ![GitHub last commit](https://img.shields.io/github/last-commit/ClaudiaRaffaelli/COVID-19-analysis)
 
-Link to Jupyter Notebooks:
-
-- https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/covid-19_pandas_analysis.ipynb
-- https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/covid-19_pandas_analysis_clau.ipynb
-- https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/covid-19_pandas_analysis_abdy.ipynb
-
 ## About the project
-TODO: insert small description
+
+The aim of this project is to provide some useful insight upon the two datasets provided by the Protezione Civile Italiana organization, reachable at this [link](https://github.com/pcm-dpc/COVID-19). To make best use of the data was also necessary to integrate this two datasets with other [geodata](http://www.diva-gis.org/gdata).
+
+The computations are performed mostly in two files:
+- <code>graph_manager.py</code>
+- <code>covid-19_pandas_analysis.ipynb</code>
+
+The first file uses the library [NetworkX](https://networkx.github.io/) to build a graph of italian provinces, from the coronavirus data provided. Once the graph has been produced, are performed a few computations. Inside the file, we made available two different versions of the Bellman Ford algorithm. 
+The first one, called <code>bellman_ford</code>, is slower and only implements the algorithm with just a few improvements. The other version, called <code>bellman_fordSPFS</code>, implements the variation of the Bellman Ford algorithm called Shortest Path First Algorithm. The main difference between the two algorithms is the presence of a data structure (a deque to be more precise) that speeds up the computation.
+It is also made available an implementation of the Betweenness centrality algorithm.
+
+The Jupyter Notebook has the aim of extracting some informations from the data of the two datasets, making a nice visualization of the results obtained. 
+
+Useful link to the Jupyter Notebook:
+- https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/covid-19_pandas_analysis.ipynb
 
 ## Repository structure
 ```
