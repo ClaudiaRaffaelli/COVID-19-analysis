@@ -10,9 +10,9 @@ The computations are performed mostly in two files:
 - <code>graph_manager.py</code>
 - <code>covid-19_pandas_analysis.ipynb</code>
 
-The first file uses the library [NetworkX](https://networkx.github.io/) to build a graph of italian provinces, from the coronavirus data provided. Once the graph has been produced are performed a few computations. Inside the file, we make available two different versions of the Bellman Ford algorithm. 
+The first file uses the library [NetworkX](https://networkx.github.io/) to build a graph of italian provinces, from the coronavirus data provided. Once the graph has been produced, are performed a few computations. Inside the file, we made available two different versions of the Bellman Ford algorithm. 
 The first one, called <code>bellman_ford</code>, is slower and only implements the algorithm with just a few improvements. The other version, called <code>bellman_fordSPFS</code>, implements the variation of the Bellman Ford algorithm called Shortest Path First Algorithm. The main difference between the two algorithms is the presence of a data structure (a deque to be more precise) that speeds up the computation.
-It is also make available an implementation of the Betweenness centrality algorithm.
+It is also made available an implementation of the Betweenness centrality algorithm.
 
 The Jupyter Notebook has the aim of extracting some informations from the data of the two datasets, making a nice visualization of the results obtained. 
 
