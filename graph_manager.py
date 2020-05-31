@@ -130,8 +130,6 @@ class GraphManager:
 		We assume there is only one shortest path between two nodes
 
 		"""
-		# TODO I shortest path vengono calcolati 2 volte (in entrambe le direzioni) invece che una
-		print("Nx betwwenness values: ", nx.betweenness_centrality(self.graph, normalized=True, endpoints=False))
 		nodes = list(self.graph.nodes(data=True))
 		shortest_paths = []  # Store all the shortest path between each pair of nodes in the graph
 		for i in range(len(nodes)):
@@ -146,14 +144,12 @@ class GraphManager:
 		# between 2 nodes
 		BC = {}
 		for target_node in range(len(nodes)):
-			num = 0
-			den = 0
+			sum_ous = 0
 			for path in shortest_paths:
-				if path[0] != nodes[target_node][0] and path[-1] != nodes[target_node][0]:
-					if nodes[target_node][0] in path:
-						num += 1
-					den += 1
-			BC[nodes[target_node][0]] = (num / den) / 2  # The shortest path are calculated two times, so we dived by 2
+				if path[0] != nodes[target_node][0] and path[-1] != nodes[target_node][0] and nodes[target_node][
+					0] in path:
+					sum_ous += 1
+			BC[nodes[target_node][0]] = (sum_ous) / ((len(nodes) - 1) * (len(nodes) - 2))
 		return BC
 
 	def bellman_ford(self, source_vertex):
@@ -348,7 +344,7 @@ def main():
 	start_time = time.time()
 	P.add_edges()
 	end_time = time.time()
-	print("tempo aggiunta archi P: " + str(end_time - start_time))
+	print("Tempo aggiunta archi P: " + str(end_time - start_time))
 	# tempo aggiunta archi P vecchio: 0.003918886184692383
 	# tempo aggiunta archi P nuovo: 0.0021970272064208984
 
@@ -365,7 +361,7 @@ def main():
 	start_time = time.time()
 	R.add_edges()
 	end_time = time.time()
-	print("tempo aggiunta archi R: " + str(end_time - start_time))
+	print("Tempo aggiunta archi R: " + str(end_time - start_time))
 	# tempo aggiunta archi R vecchio: 1.072253942489624
 	# tempo aggiunta archi R nuovo: 0.16389083862304688
 
@@ -385,7 +381,7 @@ def main():
 
 	# Betweenness
 	start = time.time()
-	print("My betwwenness values: ", P.betweenness_centrality())
+	print("Valori della betweenness: ", P.betweenness_centrality())
 	end = time.time()
 	print("Tempo per la betweenness:", end - start)
 
