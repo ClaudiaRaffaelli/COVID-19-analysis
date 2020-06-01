@@ -351,10 +351,7 @@ def main():
 	start_time = time.time()
 	P.add_edges()
 	end_time = time.time()
-	print("Tempo aggiunta archi P: " + str(end_time - start_time))
-	# tempo aggiunta archi P vecchio: 0.003918886184692383
-	# tempo aggiunta archi P nuovo: 0.0021970272064208984
-
+	print("Time required for adding edges to P: " + str(end_time - start_time))
 	P.plot_graph('province')
 
 	# Building the graph of doubles
@@ -368,29 +365,27 @@ def main():
 	start_time = time.time()
 	R.add_edges()
 	end_time = time.time()
-	print("Tempo aggiunta archi R: " + str(end_time - start_time))
-	# tempo aggiunta archi R vecchio: 1.072253942489624
-	# tempo aggiunta archi R nuovo: 0.16389083862304688
+	print("Time required for adding edges to R: " + str(end_time - start_time))
 
 	# Executing Bellman-Ford
-	'''
+
 	start_time = time.time()
-	path = P.bellman_ford_shortest_path('Enna', 'Catanzaro')
+	path = P.bellman_ford_shortest_path('Firenze', SPFA=False)
 	end_time = time.time()
-	print("tempo mio: " + str(end_time - start_time))
-	start_time = time.time()
-	path_vero = nx.bellman_ford_path(P.graph, 'Enna', 'Catanzaro', weight="label")
-	end_time = time.time()
-	print("tempo networkx: " + str(end_time - start_time))
+	print("Time to execute Bellman-Ford without SPFA on P: " + str(end_time - start_time))
 	print(path)
-	print(path_vero)
-	'''
+
+	start_time = time.time()
+	path = P.bellman_ford_shortest_path('Firenze', SPFA=True)
+	end_time = time.time()
+	print("Time to execute Bellman-Ford with SPFA on P: " + str(end_time - start_time))
+	print(path)
 
 	# Betweenness
 	start = time.time()
-	print("Valori della betweenness: ", P.betweenness_centrality(SPFA=True))
+	print("Betweenness values for P: ", P.betweenness_centrality(SPFA=True))
 	end = time.time()
-	print("Tempo per la betweenness:", end - start)
+	print("Time to execute Betweenness on P:", end - start)
 
 
 if __name__ == '__main__':
