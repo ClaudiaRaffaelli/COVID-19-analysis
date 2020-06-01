@@ -116,7 +116,7 @@ class GraphManager:
 		i, p, d = s.partition('.')
 		return '.'.join([i, (d + '0' * n)[:n]])
 
-	def betweenness_centrality(self):
+	def betweenness_centrality(self, SPFA=True):
 		"""
 		Finds the betweenness value for each node in the graph
 
@@ -124,6 +124,8 @@ class GraphManager:
 		-------
 		BC: dictionary
 			a dictionary that has the names of the nodes as keys and each node contains its value of betweenness
+		SPFA : Boolean
+			if True uses the optimized version bellman_ford_SPFA to find all the shortest path in the graph
 
 		Notes
 		-----
@@ -134,7 +136,7 @@ class GraphManager:
 		shortest_paths = []  # Store all the shortest path between each pair of nodes in the graph
 		for i in range(len(nodes)):
 			try:  # there may not be a path between two nodes
-				paths_lists = self.bellman_ford_shortest_path(nodes[i][0])
+				paths_lists = self.bellman_ford_shortest_path(nodes[i][0], SPFA=SPFA)
 				for p in paths_lists:
 					shortest_paths.append(p)
 			except:
@@ -274,7 +276,7 @@ class GraphManager:
 
 		return distances, predecessors
 
-	def bellman_ford_shortest_path(self, source_vertex):
+	def bellman_ford_shortest_path(self, source_vertex, SPFA=True):
 		"""Finds all the shortest paths from source vertex to all the nodes in a weighted graph G in terms of a list of
 		lists of nodes. Uses bellman_ford method or the optimized version bellman_ford_SPFA.
 
@@ -282,6 +284,8 @@ class GraphManager:
 		----------
 		source_vertex : node label
 			Starting node for the path
+		SPFA : Boolean
+			if True uses the optimized version bellman_ford_SPFA
 
 		Returns
 		-------
@@ -298,7 +302,10 @@ class GraphManager:
 			of the list.
 		"""
 
-		distances, predecessors = self.bellman_ford_SPFA(source_vertex)
+		if SPFA:
+			distances, predecessors = self.bellman_ford_SPFA(source_vertex)
+		else:
+			distances, predecessors = self.bellman_ford(source_vertex)
 
 		all__shortest_paths = []
 		nodes = list(self.graph.nodes(data=True))
@@ -381,7 +388,7 @@ def main():
 
 	# Betweenness
 	start = time.time()
-	print("Valori della betweenness: ", P.betweenness_centrality())
+	print("Valori della betweenness: ", P.betweenness_centrality(SPFA=True))
 	end = time.time()
 	print("Tempo per la betweenness:", end - start)
 
