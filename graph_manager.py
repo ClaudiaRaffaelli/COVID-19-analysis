@@ -41,7 +41,7 @@ class GraphManager:
 		"""
 
 		d = 0.8
-		# Creating a dictionary with key the node name and value
+		# Creating a dictionary with key the node name and value the weight in terms of distance
 		nodes = {key: value for (key, value) in self.graph.nodes(data=True)}
 		
 		# Sorting the dictionary by value 'x'
@@ -291,15 +291,12 @@ class GraphManager:
 		-------
 		all__shortest_path: list of list
 			list of list of nodes indicating the shortest path from source_vertex to all the other vertex in the graph
-		Raises
-		------
-		ValueError
-			If there is no path between the starting node and target node
 
 		Notes
 		-----
 			Each shortest path returned is provided in the reverse order, that is, source_vertex is the last element
-			of the list.
+			of the list. If there is no path between the starting node to a certain node, no path is added for that
+			specific target node.
 		"""
 
 		if SPFA:
