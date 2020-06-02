@@ -27,6 +27,8 @@ Useful links to the Jupyter Notebook:
 │   ├── dpc-covid19-ita-province.json
 │   └── dpc-covid19-ita-regioni.json
 ├── graph_manager.py
+├── Graph_manager_presentation.ipynb
+├── Graph_manager_presentation.slides.html
 ├── LICENSE
 ├── README.md
 └── shape-italy
