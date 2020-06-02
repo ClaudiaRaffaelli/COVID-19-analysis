@@ -16,8 +16,9 @@ It is also made available an implementation of the Betweenness centrality algori
 
 The Jupyter Notebook has the aim of extracting some informations from the data of the two datasets, making a nice visualization of the results obtained. 
 
-Useful link to the Jupyter Notebook:
-- https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/covid-19_pandas_analysis.ipynb
+Useful links to the Jupyter Notebook:
+- [Covid-19 Pandas Analysis](https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/covid-19_pandas_analysis.ipynb)
+- [Graph Manager presentation](https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/Graph_manager_presentation.ipynb)
 
 ## Repository structure
 ```
