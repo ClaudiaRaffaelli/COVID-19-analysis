@@ -319,12 +319,13 @@ class GraphManager:
 			shortest_path.append(target_vertex)
 			while current_node != source_vertex:
 				current_node = predecessors[current_node]
-				# raising an exception if there is not path between the two nodes considered
+				# exit from the loop if there is not path between the two nodes considered
 				if current_node is None:
-					raise ValueError("There is no path between node " + target_vertex + " and node " + source_vertex)
+					break
 
 				shortest_path.append(current_node)
-			all__shortest_paths.append(shortest_path)
+			if len(shortest_path) != 1:
+				all__shortest_paths.append(shortest_path)
 		return all__shortest_paths
 
 
