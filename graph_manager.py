@@ -4,6 +4,7 @@ import math
 import random
 import time
 from collections import deque
+import numpy as np
 
 
 class GraphManager:
@@ -133,25 +134,15 @@ class GraphManager:
 
 		"""
 		nodes = list(self.graph.nodes(data=True))
-		shortest_paths = []  # Store all the shortest path between each pair of nodes in the graph
+		BC = {nodes[i][0]: 0 for i in range(len(nodes))}  # Initialize the betweenness centrality to 0 for each node
 		for i in range(len(nodes)):
-			try:  # there may not be a path between two nodes
-				paths_lists = self.bellman_ford_shortest_path(nodes[i][0], SPFA=SPFA)
-				for p in paths_lists:
-					shortest_paths.append(p)
-			except:
-				pass
-
-		# Store the Betweenness Centrality for each node. For now, we suppose there is only 1 shortest path
-		# between 2 nodes
-		BC = {}
-		for target_node in range(len(nodes)):
-			sum_ous = 0
-			for path in shortest_paths:
-				if path[0] != nodes[target_node][0] and path[-1] != nodes[target_node][0] and nodes[target_node][
-					0] in path:
-					sum_ous += 1
-			BC[nodes[target_node][0]] = (sum_ous) / ((len(nodes) - 1) * (len(nodes) - 2))
+			paths_lists = self.bellman_ford_shortest_path(nodes[i][0], SPFA=SPFA)
+			for path in paths_lists:
+				for node in path[1:-1]:
+					BC[node] += 1
+		# Normalize
+		for i in BC:
+			BC[i] /= ((len(nodes) - 1) * (len(nodes) - 2))
 		return BC
 
 	def bellman_ford(self, source_vertex):
@@ -384,6 +375,11 @@ def main():
 	print("Betweenness values for P: ", P.betweenness_centrality(SPFA=True))
 	end = time.time()
 	print("Time to execute Betweenness on P:", end - start)
+
+	start = time.time()
+	print("Betweenness values for R: ", R.betweenness_centrality(SPFA=True))
+	end = time.time()
+	print("Time to execute Betweenness on R:", end - start)
 
 
 if __name__ == '__main__':
