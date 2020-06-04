@@ -13447,8 +13447,8 @@ These slides describe a technique to calculate the Betweenness Centrality of a g
 <span class="n">R</span> <span class="o">=</span> <span class="n">GraphManager</span><span class="p">()</span>
 <span class="c1"># Generate 2000 pairs of double (x,y)</span>
 <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">2000</span><span class="p">):</span>
-    <span class="n">x</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">)</span>
-    <span class="n">y</span> <span class="o">=</span> <span class="n">random</span><span class="o">.</span><span class="n">randrange</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">30</span><span class="p">,</span> <span class="mi">50</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="nb">round</span><span class="p">(</span><span class="n">random</span><span class="o">.</span><span class="n">uniform</span><span class="p">(</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">),</span> <span class="mi">1</span><span class="p">)</span>
     <span class="n">R</span><span class="o">.</span><span class="n">add_node_to_graph</span><span class="p">(</span><span class="nb">str</span><span class="p">(</span><span class="n">i</span><span class="p">),</span> <span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="p">)</span>
 </pre></div>
 
@@ -13511,8 +13511,8 @@ Here, we see our implementatin of this task.</p>
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>1.44 ms ± 11 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
-115 ms ± 891 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+<pre>2.26 ms ± 21.9 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+327 ms ± 4.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 </pre>
 </div>
 </div>
@@ -13713,8 +13713,8 @@ Here, we see our implementatin of this task.</p>
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>4.16 ms ± 25.2 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
-1.63 ms ± 14.1 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>6.51 ms ± 61.5 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
+2.51 ms ± 19.6 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -14123,7 +14123,7 @@ Here, we see our implementatin of this task.</p>
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>1.73 ms ± 6.42 µs per loop (mean ± std. dev. of 7 runs, 1000 loops each)
+<pre>2.58 ms ± 30.1 µs per loop (mean ± std. dev. of 7 runs, 100 loops each)
 </pre>
 </div>
 </div>
@@ -14321,10 +14321,10 @@ Applications:</p>
 
 
 <div class="output_subarea output_stream output_stdout output_text">
-<pre>159 ms ± 1.45 ms per loop (mean ± std. dev. of 7 runs, 10 loops each)
-44.3 ms ± 147 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
-1.51 s ± 11.7 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
-708 ms ± 1.91 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+<pre>241 ms ± 3.18 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
+67.4 ms ± 257 µs per loop (mean ± std. dev. of 7 runs, 10 loops each)
+4min 49s ± 5.22 s per loop (mean ± std. dev. of 7 runs, 1 loop each)
+1min 9s ± 615 ms per loop (mean ± std. dev. of 7 runs, 1 loop each)
 </pre>
 </div>
 </div>

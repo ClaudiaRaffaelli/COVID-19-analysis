@@ -360,42 +360,16 @@ def main():
 	end_time = time.time()
 	print("Time required for adding edges to R: " + str(end_time - start_time))
 
-	# Executing Bellman-Ford
-
-	start_time = time.time()
-	path = P.bellman_ford_shortest_path('Firenze', SPFA=False)
-	end_time = time.time()
-	print("Time to execute Bellman-Ford without SPFA on P: " + str(end_time - start_time))
-	print(path)
-
-	start_time = time.time()
-	path = P.bellman_ford_shortest_path('Firenze', SPFA=True)
-	end_time = time.time()
-	print("Time to execute Bellman-Ford with SPFA on P: " + str(end_time - start_time))
-	print(path)
-
-	start_time = time.time()
-	path = R.bellman_ford_shortest_path('20', SPFA=True)
-	end_time = time.time()
-	print("Time to execute Bellman-Ford with SPFA on R: " + str(end_time - start_time))
-	print(path)
-
 	# Betweenness
 	start = time.time()
 	print("Betweenness values for P: ", P.betweenness_centrality(SPFA=True))
 	end = time.time()
 	print("Time to execute Betweenness on P:", end - start)
-	print(nx.betweenness_centrality(P.graph, weight='label', normalized=True))
 
 	start = time.time()
 	print("Betweenness values for R: ", R.betweenness_centrality(SPFA=True))
 	end = time.time()
 	print("Time to execute Betweenness on R:", end - start)
-
-	start = time.time()
-	print(nx.betweenness_centrality(R.graph, weight='label', normalized=True))
-	end = time.time()
-	print("Time to execute Betweenness on R (networkX):", end - start)
 
 
 if __name__ == '__main__':
