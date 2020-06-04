@@ -350,9 +350,10 @@ def main():
 	R = GraphManager()
 	# Generate 2000 pairs of double (x,y)
 	for i in range(2000):
-		x = random.randrange(30, 50)
-		y = random.randrange(10, 20)
+		x = round(random.uniform(30, 50), 1)
+		y = round(random.uniform(10, 20), 1)
 		R.add_node_to_graph(str(i), x, y)
+	print(R.graph.nodes(data=True))
 
 	start_time = time.time()
 	R.add_edges()
@@ -373,16 +374,28 @@ def main():
 	print("Time to execute Bellman-Ford with SPFA on P: " + str(end_time - start_time))
 	print(path)
 
+	start_time = time.time()
+	path = R.bellman_ford_shortest_path('20', SPFA=True)
+	end_time = time.time()
+	print("Time to execute Bellman-Ford with SPFA on R: " + str(end_time - start_time))
+	print(path)
+
 	# Betweenness
 	start = time.time()
 	print("Betweenness values for P: ", P.betweenness_centrality(SPFA=True))
 	end = time.time()
 	print("Time to execute Betweenness on P:", end - start)
+	print(nx.betweenness_centrality(P.graph, weight='label', normalized=True))
 
 	start = time.time()
 	print("Betweenness values for R: ", R.betweenness_centrality(SPFA=True))
 	end = time.time()
 	print("Time to execute Betweenness on R:", end - start)
+
+	start = time.time()
+	print(nx.betweenness_centrality(R.graph, weight='label', normalized=True))
+	end = time.time()
+	print("Time to execute Betweenness on R (networkX):", end - start)
 
 
 if __name__ == '__main__':
