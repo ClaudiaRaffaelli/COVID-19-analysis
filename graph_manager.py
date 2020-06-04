@@ -121,12 +121,15 @@ class GraphManager:
 		"""
 		Finds the betweenness value for each node in the graph
 
+		Parameters
+		----------
+		SPFA : Boolean
+			if True uses the optimized version bellman_ford_SPFA to find all the shortest path in the graph
+
 		Returns
 		-------
 		BC: dictionary
 			a dictionary that has the names of the nodes as keys and each node contains its value of betweenness
-		SPFA : Boolean
-			if True uses the optimized version bellman_ford_SPFA to find all the shortest path in the graph
 
 		Notes
 		-----
