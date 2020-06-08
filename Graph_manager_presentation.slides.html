@@ -14223,7 +14223,7 @@ Applications:</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h3 id="A-handy-benefit-to-betwenness-centrality">A handy benefit to betwenness centrality<a class="anchor-link" href="#A-handy-benefit-to-betwenness-centrality">&#182;</a></h3><p>You don't need a fully connected graph or component to calculate it
+<h3 id="A-handy-benefit-to-betwenness-centrality">A handy benefit to betwenness centrality<a class="anchor-link" href="#A-handy-benefit-to-betwenness-centrality">&#182;</a></h3><p>We don't need a (fully) connected graph to calculate it
 <img src="./imgs/component.png" alt="title"></p>
 
 </div>
@@ -14268,7 +14268,7 @@ Applications:</p>
 <li>$Θ(|V|^3)$ for weighted graphs <em>(<a href="https://en.wikipedia.org/wiki/Floyd%E2%80%93Warshall_algorithm">Floyd–Warshall algorithm</a>)</em>.<br> $O(|V|^2 log|V| + |V||E|)$ on sparse graphs <em>(<a href="https://en.wikipedia.org/wiki/Johnson%27s_algorithm">Johnson's algorithm</a> or <a href="https://web.archive.org/web/20171013152036/http://algo.uni-konstanz.de/publications/b-fabc-01.pdf">Brandes' algorithm</a>)</em><br><br></li>
 <li>$O(|V||E|)$ for unweighted graphs <em>(Brandes' algorithm)</em>.</li>
 </ul>
-<p>A single execution of the algorithms will find the shortest paths between all pairs of vertices.</p>
+<p>A single execution of the algorithms will find the shortest paths between all pairs of vertices. In the last case (Brandes' algorithm) it also calculate the betweenness value for each vertex.</p>
 
 </div>
 </div>
@@ -14276,11 +14276,10 @@ Applications:</p>
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h1 id="Our-implementation">Our implementation<a class="anchor-link" href="#Our-implementation">&#182;</a></h1><p>Here is a snippet of our implementation in $O(|V|^3|E|)$, we used <em>Bellman-Ford's alghoritm</em> to find the shortest paths from a source node $i$ to $v$, with $v \in V$</p>
+<h1 id="Our-implementation">Our implementation<a class="anchor-link" href="#Our-implementation">&#182;</a></h1><p>Here is a snippet of our implementation which calculates the betwenness value for each node in $O(|V|^3|E|)$. We used <em>Bellman-Ford's alghoritm</em> to find the shortest paths from a source node $i$ to $v$, with $v \in V$</p>
 <div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">betweenness_centrality</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SPFA</span><span class="o">=</span><span class="bp">True</span><span class="p">):</span>
     <span class="n">nodes</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">graph</span><span class="o">.</span><span class="n">nodes</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="bp">True</span><span class="p">))</span>
     <span class="n">N</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">nodes</span><span class="p">)</span>
-    <span class="c1"># Initialize the betweenness centrality to 0 for each node</span>
     <span class="n">BC</span> <span class="o">=</span> <span class="p">{</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]:</span> <span class="mi">0</span> <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">)}</span>  
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">N</span><span class="p">):</span>
         <span class="n">paths_lists</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bellman_ford_shortest_path</span><span class="p">(</span><span class="n">nodes</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">],</span> <span class="n">SPFA</span><span class="o">=</span><span class="n">SPFA</span><span class="p">)</span>
@@ -14289,7 +14288,7 @@ Applications:</p>
                 <span class="n">BC</span><span class="p">[</span><span class="n">node</span><span class="p">]</span> <span class="o">+=</span> <span class="mi">1</span>
     <span class="c1"># Normalize</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">BC</span><span class="p">:</span>
-        <span class="n">BC</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="p">((</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">2</span><span class="p">))</span>
+        <span class="n">BC</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">/=</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">*</span> <span class="p">(</span><span class="n">N</span> <span class="o">-</span> <span class="mi">2</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">BC</span>
 </pre></div>
 
@@ -14337,7 +14336,7 @@ Applications:</p>
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
 <h1 id="Implementation-decisions-making">Implementation decisions making<a class="anchor-link" href="#Implementation-decisions-making">&#182;</a></h1><ul>
-<li>In our implementation we used the Bellman-Ford algorithm (which is not good for this kind of problem) to calculate the shortest path between two nodes. This forced us to calculate the shortes path in both directions, therefore we needed to divide by 2 the result of the betweenness of the considered node. <br>The total complexity of the this algorithm is $O(|V|^3|E|)$ while Floyd–Warshall algorithm takes $Θ(|V|^3)$</li>
+<li>In our implementation we used the Bellman-Ford algorithm (which is not good for this kind of problem) to calculate the shortest path between two nodes. This forced us to calculate the shortes path in both directions, therefore we needed to divide by 2 the result of the betweenness of the considered node. <br>We  have calculated all the shortest paths in the graph in $O(|V|^2|E|)$ while Johnson's algorithm takes $O(|V|^2 log|V| + |V||E|)$</li>
 </ul>
 
 </div>
