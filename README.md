@@ -29,6 +29,14 @@ Useful links to the Jupyter Notebook:
 ├── graph_manager.py
 ├── Graph_manager_presentation.ipynb
 ├── Graph_manager_presentation.slides.html
+├── Graph_manager_presentation_slides.pdf
+├── imgs
+│   ├── ...
+├── latex_presentation
+│   ├── bibliography.bib
+│   ├── imgs
+│   │   ├── ...
+│   ├── main.tex
 ├── LICENSE
 ├── README.md
 └── shape-italy
