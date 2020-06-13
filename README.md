@@ -4,7 +4,7 @@
 
 ## About the project
 
-The aim of this project is to provide some useful insight upon the two datasets provided by the Protezione Civile Italiana organization, reachable at this [link](https://github.com/pcm-dpc/COVID-19). To make best use of the data was also necessary to integrate this two datasets with other [geodata](http://www.diva-gis.org/gdata).
+The aim of this project is to provide some useful insight upon the two datasets provided by the Protezione Civile Italiana organization, reachable at this [link](https://github.com/pcm-dpc/COVID-19). To make best use of the data was also necessary to integrate this two datasets with other [geodata](http://www.diva-gis.org).
 
 The computations are performed mostly in two files:
 - <code>graph_manager.py</code>
@@ -16,7 +16,7 @@ It is also made available an implementation of the Betweenness centrality algori
 
 The Jupyter Notebook has the aim of extracting some informations from the data of the two datasets, making a nice visualization of the results obtained. 
 
-Useful links to the Jupyter Notebook:
+Useful links to the Jupyter Notebooks:
 - [Covid-19 Pandas Analysis](https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/covid-19_pandas_analysis.ipynb)
 - [Graph Manager presentation](https://nbviewer.jupyter.org/github/ClaudiaRaffaelli/COVID-19-analysis/blob/master/Graph_manager_presentation.ipynb)
 
